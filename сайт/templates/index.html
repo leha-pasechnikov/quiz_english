@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz on WWII</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(to right, #2c3e50, #4ca1af);
+    color: white;
+    margin: 0;
+}
+
+header {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: bold;
+    position: relative;
+}
+
+nav a:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #fff;
+    transition: width 0.3s;
+}
+
+nav a:hover:before {
+    width: 100%;
+}
+
+main {
+    padding: 20px;
+}
+
+.topics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+.topic-link {
+    background: #007bff;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 18px;
+    transition: 0.3s;
+    opacity: 0;
+    animation: fadeInUp 0.6s forwards;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: calc(50% - 15px); /* По 2 в ряд по умолчанию */
+}
+
+.topic-link ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: disc; /* Включаем отображение точек */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.topic-link li {
+    text-align: left;
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.topic-link a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    margin: 5px 0;
+}
+
+.topic-link:hover {
+    background: #0056b3;
+}
+
+/* По 2 в ряд по умолчанию */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .topic-link {
+        width: calc(33.33% - 15px); /* 3 в ряд */
+    }
+}
+
+/* Для экранов шириной от 1025px до 1280px (4 в ряд) */
+@media (min-width: 1025px) and (max-width: 1280px) {
+    .topic-link {
+        width: calc(25% - 15px); /* 4 в ряд */
+    }
+}
+
+/* Для экранов шириной от 1281px и больше (5 в ряд) */
+@media (min-width: 1281px) {
+    .topic-link {
+        width: calc(20% - 15px); /* 5 в ряд */
+    }
+}
+
+.topic-link:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.topic-link:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.topic-link:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.topic-link:nth-child(4) {
+    animation-delay: 0.8s;
+}
+
+.section-content {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    background: #333;
+    border-radius: 8px;
+    animation: slideIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.topic-link h3 {
+    border: 2px solid white;
+    padding: 10px;
+    display: inline-block;
+    border-radius: 8px;
+    user-select: text; /* Разрешает выделение текста */
+}
+
+/* Анимация подчёркивания ссылок */
+.topic-link a {
+    position: relative;
+    display: inline-block;
+}
+
+.topic-link a:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: width 0.3s ease-in-out;
+}
+
+.topic-link a:hover:before {
+    width: 100%;
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>WWII Quiz</h1>
+        <nav>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Select a topic:</h2>
+        <div class="topics">
+            {% for t in topics %}
+                <div class="topic-link">
+                    <h3>{{ t.title }}</h3>
+                    <ul>
+                        {% if t.sections %}
+                            {% for s in t.sections %}
+                                <li><a href="/section/{{ s.id }}">{{ s.title }}</a></li>
+                            {% endfor %}
+                        {% else %}
+                            <li>Заданий пока нет</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const topicLinks = document.querySelectorAll('.topic-link');
+            const sections = document.querySelectorAll('.section-content');
+
+            topicLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    const topicId = this.getAttribute('data-topic-id');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+
+                    // Show the section corresponding to the selected topic
+                    const activeSection = document.querySelector(`.section-content[data-section-id="${topicId}"]`);
+                    if (activeSection) {
+                        activeSection.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

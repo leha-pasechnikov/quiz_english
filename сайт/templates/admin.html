@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        html {
+        background:#000000;
+        }
+        body {
+            background-color: black;
+            background: #000000;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .table-container {
+            margin: 20px auto;
+            width: 100%; /* Занимает всю ширину страницы */
+            max-width: 100vw; /* Ограничение ширины контейнера в пределах экрана */
+            overflow-x: auto; /* Добавляет горизонтальный скролл при необходимости */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(233, 207, 88, 0.5); /* Свечение вокруг контейнера */
+            opacity: 0; /* Начальная непрозрачность */
+            transform: translateY(20px); /* Начальное смещение */
+            animation: fadeIn 0.5s forwards; /* Применение анимации */
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1; /* Конечная непрозрачность */
+                transform: translateY(0); /* Возврат к исходному положению */
+            }
+        }
+
+        .table {
+            width: 100%; /* Таблица растягивается на всю ширину контейнера */
+            border-collapse: collapse;
+            min-width: 100%; /* Гарантирует, что таблица не будет сжиматься меньше ширины страницы */
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+            background: #232742;
+            color: white;
+            min-width: 0; /* Обеспечивает, чтобы ячейки не сжимались слишком сильно */
+        }
+
+
+        td {
+            max-width: 350px; /* Установите максимальную ширину ячейки */
+            overflow: hidden; /* Скрывает содержимое, если оно выходит за границы */
+            text-overflow: ellipsis; /* Добавляет многоточие, если текст не помещается */
+            white-space: normal; /* Позволяет переносить текст на новую строку */
+            word-wrap: break-word; /* Позволяет переносить длинные слова */
+            overflow-wrap: break-word; /* Современный аналог word-wrap */
+        }
+
+
+        th {
+            background-color: #111320;
+            color: gold;
+        }
+
+
+
+
+        .select-table {
+            margin: 20px;
+        }
+
+        .modal-content {
+            padding: 20px;
+            background: black;
+
+        }
+
+
+        .form-control {
+            padding: 10px;
+        }
+
+        .modal-header {
+            color: white;
+            background: #232742;
+        }
+
+        .modal-footer {
+            background-color: #f4f7fa;
+            background: #232742;
+
+        }
+
+        .delete-row {
+            color: white;
+            font-weight: bold;
+        }
+
+        .delete-row:hover {
+            background-color: #a94442;
+        }
+
+        .modal-content {
+    padding: 20px;
+    border-radius: 8px;
+}
+
+
+.container-tool {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.form-group, .select-table {
+    color: gold;
+    font-weight: 700;
+    display: flex; /* Используем Flexbox для разделения */
+    margin-bottom: 35px;
+    background: #111320;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(233, 207, 88, 0.5); /* Свечение вокруг контейнера */
+    opacity: 0; /* Начальная непрозрачность */
+    transform: translateY(20px); /* Начальное смещение */
+    animation: fadeIn 0.5s forwards; /* Применение анимации */
+    flex-direction: column;
+}
+@keyframes fadeIn {
+    to {
+        opacity: 1; /* Конечная непрозрачность */
+        transform: translateY(0); /* Возврат к исходному положению */
+    }
+}
+
+        .btn.btn-primary, .poisk.btn.btn-primary {
+            background: #28a745; /* Основной цвет кнопки */
+            color: white; /* Цвет текста */
+            border: 2px solid green;
+            transition: background 0.3s ease; /* Плавный переход цвета */
+        }
+
+        .btn.btn-primary:hover, .poisk.btn.btn-primary:hover {
+            background: #218838; /* Цвет кнопки при наведении */
+        }
+
+
+        .btn.btn-secondary {
+            background-color: #dc3545;
+            color: white;
+            transition: background 0.3s ease;
+        }
+        .btn.btn-secondary:hover {
+            background-color: #c82333;
+        }
+       .form-control  {
+    color: white;
+    background-color: #2c2f33;
+    padding: 10px;
+    border: 1px white #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    width: 400px;
+}
+
+.form-group.row {
+    padding: 0px;
+}
+
+select {
+    background-color: black; /* Цвет фона по умолчанию */
+    color: gold; /* Цвет текста по умолчанию */
+    border: 1px solid #ccc; /* Обводка */
+    border-radius: 4px;
+    padding: 5px;
+    outline: none;
+    transition: background-color 0.3s ease; /* Плавное изменение фона */
+}
+
+select:focus {
+    background-color: black; /* Цвет фона при фокусе */
+    color: gold/* Цвет текста при фокусе */
+}
+
+option {
+    background-color: black; /* Цвет фона для всех опций */
+    color: gold; /* Цвет текста для всех опций */
+}
+
+/* Опционально: изменение цвета при наведении на пункт */
+option:hover {
+    background-color: black;
+    color: gold;
+}
+
+/* Общие стили для модального окна */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+    padding-top: 50px;
+}
+
+/* Стили для содержимого модального окна */
+.modal-dialog {
+    margin: 0 auto;
+    max-width: 800px;
+    width: 90%;
+}
+
+/* Стили для самого окна */
+.modal-content {
+    background-color: #111320;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+}
+
+/* Закрыть модальное окно */
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Заголовок формы */
+h2 {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* Стили для формы */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    color: gold;
+}
+
+/* Стили для всех input и textarea */
+input[type="text"],
+input[type="date"],
+input[type="file"],
+textarea {
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #2c2f33;
+    color: white;
+}
+
+/* Стили для textarea */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Кнопка отправки */
+button[type="submit"] {
+     background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background: #218838;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="container-tool">
+    <div class="form-group">
+        <label for="tableSelect">Выберите таблицу:</label>
+        <select id="tableSelect" class="form-control">
+        {% for table in tables %}
+        <option value="{{ table.Tables_in_english_tasks }}">{{ table.Tables_in_english_tasks }}</option>
+        {% endfor %}
+        </select>
+
+        <button class="btn btn-primary" data-toggle="modal" data-target="#addRecordModal">Добавить запись</button>
+    </div>
+    <div class="form-group">
+        <button id="openModal" class="btn btn-primary" data-toggle="modal" data-target="#addFilmModal">Добавить фильм</button>
+        <label  style="margin-top:30px;">Выберите сеанс для добавления билетов</label>
+        <input type="text" id="ticket-text" class="form-control" placeholder="Введите id сеанса">
+        <button id="openModalTicket" class="btn btn-primary">Добавить билеты</button>
+    </div>
+    <div class="form-group">
+        <label for="column-dropdown">Выберите поле таблицы для поиска:</label>
+        <select id="column-dropdown" class="form-control">
+            <option value="">Выберите поле</option>
+        </select>
+        <input type="text" id="search-text" class="form-control" placeholder="Введите текст для поиска">
+        <button class="poisk btn btn-primary">Найти запись</button>
+    </div>
+</div>
+<div id="tableContainer" class="table-container">
+    <table class="table table-bordered" id="data-table">
+        <thead>
+            <tr id="table-head">
+                <!-- Заголовки таблицы будут динамически загружены -->
+            </tr>
+<!--<tr id="filter-row">-->
+<!--        &lt;!&ndash; Поля для фильтрации &ndash;&gt;-->
+<!--    </tr>-->
+        </thead>
+        <tbody id="table-body">
+            <!-- Данные таблицы будут динамически загружены -->
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Модальное окно добавления фильма-->
+<div class="modal fade" id="addFilmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Добавить информацию о фильме</h2>
+            <form id="filmForm" enctype="multipart/form-data">
+
+                <label for="title">Название:</label>
+                <input type="text" id="title" name="title" required>
+
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <label for="startProkat">Дата начала проката:</label>
+                <input type="date" id="startProkat" name="startProkat" required>
+
+                <label for="finishProkat">Дата окончания проката:</label>
+                <input type="date" id="finishProkat" name="finishProkat" required>
+
+                <label for="hronometrazh">Хронометраж:</label>
+                <input type="text" id="hronometrazh" name="hronometrazh" required>
+
+                <label for="rezhiser">Режиссёр:</label>
+                <input type="text" id="rezhiser" name="rezhiser" required>
+
+                <label for="producer">Продюсер:</label>
+                <input type="text" id="producer" name="producer" required>
+
+                <label for="scenarist">Сценарист:</label>
+                <input type="text" id="scenarist" name="scenarist" required>
+
+                <label for="actor">Актёры:</label>
+                <textarea id="actor" name="actor" required></textarea>
+
+                <label for="image">Изображение фильма:</label>
+                <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.gif" required>
+
+                <label for="poster">Постер фильма:</label>
+                <input type="file" id="poster" name="poster" accept=".jpg,.jpeg,.png,.gif" required>
+
+                <label for="trailer">Трейлер фильма:</label>
+                <input type="file" id="trailer" name="trailer" accept=".mp4,.avi,.mov" required>
+
+                <button type="submit">Добавить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Модальное окно для добавления записи -->
+<div class="modal fade" id="addRecordModal" tabindex="-1" role="dialog" aria-labelledby="addRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addRecordModalLabel">Добавить запись</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addRecordForm">
+                    <div id="form-fields" class="container">
+                        <!-- Поля формы будут динамически загружены -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="saveRecord">Сохранить запись</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования записи -->
+<div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRecordModalLabel">Редактировать запись</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editRecordForm">
+                    <div id="edit-form-fields">
+                        <!-- Поля формы для редактирования будут динамически загружены -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="updateRecord">Обновить запись</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="notification" style="display: none; position: fixed; top: 10px; right: 10px; background: #4CAF50; color: white; padding: 15px; border-radius: 5px;">
+</div>
+
+<script>
+    // Функция для показа пользовательского уведомления
+    function showNotification(message) {
+        const notification = $('#notification'); // Предполагаем, что у вас есть элемент с id "notification"
+        notification.text(message).fadeIn(); // Устанавливаем текст и показываем уведомление
+        setTimeout(() => {
+            notification.fadeOut(); // Скрываем уведомление через 3 секунды
+        }, 3000);
+    }
+
+    $('#saveRecord').on('click', function () {
+        const table = $('#tableSelect').val(); // Получаем выбранную таблицу
+        const formData = {};
+
+        // Собираем данные из формы
+        $('#addRecordForm input').each(function () {
+            const fieldName = $(this).attr('name');
+            const fieldValue = $(this).val();
+            formData[fieldName] = fieldValue;
+        });
+
+        // Отправляем данные на сервер
+        $.ajax({
+            url: `/admin/record/${table}`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (response) {
+                showNotification('Запись успешно добавлена!');
+                $('#addRecordModal').modal('hide'); // Закрываем модальное окно
+
+                const newId = response.id; // Получаем ID новой записи
+                const newRowHtml = `
+                    <tr data-id="${newId}">
+                        <td><button class="btn btn-danger btn-sm delete-row">Удалить</button></td>
+                        ${Object.keys(formData).map(field => `<td>${formData[field]}</td>`).join('')}
+                    </tr>`;
+
+
+                // Вставляем строку по порядку относительно столбца ID
+                let inserted = false;
+                $('#table-body tr').each(function () {
+                    const existingId = parseInt($(this).data('id'), 10);
+                    if (newId < existingId) {
+                        $(this).before(newRowHtml); // Вставляем перед первой строкой с большим ID
+                        inserted = true;
+                        return false; // Прерываем цикл
+                    }
+                });
+
+                if (!inserted) {
+                    // Если строка не вставлена, добавляем в конец
+                    $('#table-body').prepend(newRowHtml);
+                }
+            },
+            error: function (err) {
+                alert('Ошибка при добавлении записи: ' + (err.responseJSON?.error || err.statusText));
+            }
+        });
+    });
+
+
+
+
+    $(document).ready(function () {
+        // Проверяем, есть ли сохранённая таблица в Local Storage
+        const savedTable = localStorage.getItem('selectedTable');
+        if (savedTable) {
+            $('#tableSelect').val(savedTable); // Устанавливаем сохранённое значение
+            loadTableData(savedTable); // Загружаем данные таблицы
+        } else {
+            // Если значение не сохранено, загружаем первую таблицу
+            const defaultTable = $('#tableSelect').val();
+            loadTableData(defaultTable);
+        }
+
+        // Обработчик изменения выпадающего списка
+        $('#tableSelect').change(function () {
+            const selectedTable = $(this).val();
+            localStorage.setItem('selectedTable', selectedTable); // Сохраняем выбранную таблицу
+            loadTableData(selectedTable);
+        });
+
+        // Функция загрузки данных таблицы
+        function loadTableData(table) {
+            $.get(`/admin/record/${table}`, function (data) {
+                // Очищаем текущие заголовки и строки таблицы
+                $('#table-head').empty();
+                $('#table-body').empty();
+
+                // Добавляем заголовки таблицы
+                data.table_head.forEach(field => {
+                    $('#table-head').append(`<th>${field}</th>`);
+                });
+                $('#table-head').append('<th>Действия</th>'); // Добавляем колонку для действий
+
+                // Добавляем строки таблицы
+                data.table_value.forEach(row => {
+                    const rowHtml = `<tr data-id="${row.id}">` +
+                        data.table_head.map(field => `<td>${row[field]}</td>`).join('') +
+                        `<td>
+                            <button class="btn btn-warning btn-sm edit-row" data-id="${row.id}">Изменить</button>
+                            <span class="delete-row" style="cursor: pointer;">Удалить</span>
+                        </td>
+                    </tr>`;
+                    $('#table-body').append(rowHtml);
+                });
+
+                // Очищаем форму добавления и создаём поля ввода
+                $('#form-fields').empty();
+                data.table_head.forEach(field => {
+                    $('#form-fields').append(`
+                        <div class="form-group row">
+                            <label for="${field}" class="col-sm-4 col-form-label">${field}</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="${field}" name="${field}" required>
+                            </div>
+                        </div>
+                    `);
+                });
+
+                // Очищаем и заполняем выпадающий список
+                const dropdown = $('#column-dropdown'); // ID для выпадающего списка
+                dropdown.empty(); // Очистить список
+                dropdown.append('<option value="">Выберите поле</option>'); // Опция по умолчанию
+                data.table_head.forEach(field => {
+                    dropdown.append(`<option value="${field}">${field}</option>`);
+                });
+            });
+        }
+
+    });
+
+    $(document).ready(function() {
+        $('#tableSelect').change(function() {
+            const selectedTable = $(this).val();
+            loadTableData(selectedTable);
+        });
+
+        function loadTableData(table) {
+            $.get(`/admin/record/${table}`, function(data) {
+                $('#table-head').empty();
+                $('#table-body').empty();
+
+                // Добавляем заголовок для столбца с кнопками удаления
+                $('#table-head').append('<th>Удалить</th>');
+                data.table_head.forEach(field => {
+                    $('#table-head').append(`<th>${field}</th>`);
+                });
+
+                data.table_value.forEach(row => {
+                    const rowHtml = `<tr data-id="${row.id}">` +
+                        `<td><button class="btn btn-danger btn-sm delete-row">Удалить</button></td>` + // Кнопка удаления
+                        data.table_head.map(field => `<td contenteditable="true" data-field="${field}" data-original-value="${row[field]}">${row[field]}</td>`).join('') +
+                        `</tr>`;
+                    $('#table-body').append(rowHtml);
+                });
+            });
+        }
+        // Удаление строки
+        $(document).on('click', '.delete-row', function() {
+            const row = $(this).closest('tr');
+            const rowId = row.data('id');
+            const table = $('#tableSelect').val();
+
+            if (confirm('Вы уверены, что хотите удалить эту строку?')) {
+                $.ajax({
+                    url: `/admin/record/${table}/${rowId}`,
+                    type: 'DELETE',
+                    success: function() {
+                        showNotification('Строка успешно удалена!'); // Используем пользовательское уведомление
+                        row.remove(); // Удаляем строку из таблицы
+                    },
+                    error: function(err) {
+                        showNotification('Ошибка при удалении строки: ' + (err.responseJSON?.error || err.statusText));
+                    }
+                });
+            }
+        });
+
+        // Отправка изменений при выходе из редактируемой ячейки
+        $(document).on('blur', 'td[contenteditable="true"]', function() {
+            const cell = $(this);
+            const row = cell.closest('tr');
+            const rowId = row.data('id');
+            const table = $('#tableSelect').val();
+            const fieldName = cell.data('field');
+            const newValue = cell.text();
+            const originalValue = cell.data('original-value');
+
+            // Проверяем, изменилось ли значение
+            if (newValue != originalValue) {
+                const payload = {};
+                payload[fieldName] = newValue;
+
+                $.ajax({
+                    url: `/admin/record/${table}/${rowId}`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(payload),
+                    success: function(response) {
+                        showNotification(response.message);
+
+                        // Обновляем значение в ячейке
+                        cell.data('original-value', newValue);
+
+                        // Если обновляется ID, перемещаем строку
+                        if (fieldName === 'id') {
+                            const newId = parseInt(newValue, 10);
+                            row.data('id', newId); // Обновляем атрибут data-id
+
+                            // Перемещаем строку по порядку
+                            let inserted = false;
+                            $('#table-body tr').each(function() {
+                                const existingId = parseInt($(this).data('id'), 10);
+                                if (newId < existingId) {
+                                    $(this).before(row); // Перемещаем строку
+                                    inserted = true;
+                                    return false; // Прерываем цикл
+                                }
+                            });
+
+                            if (!inserted) {
+                                // Если строка не вставлена, добавляем её в конец
+                                $('#table-body').append(row);
+                            }
+                        }
+                    },
+                    error: function(err) {
+                        alert('Произошла ошибка: ' + err.responseJSON.error);
+                        cell.text(originalValue); // Восстанавливаем старое значение в случае ошибки
+                    }
+                });
+            }
+        });
+
+
+        // Загружаем начальные данные для первой таблицы
+        if ($('#tableSelect').val()) {
+            loadTableData($('#tableSelect').val());
+        }
+    });
+$(document).ready(function () {
+    // Обработчик нажатия кнопки "Найти запись"
+    $('.poisk').on('click', function () {
+        const table = $('#tableSelect').val(); // Значение выбранной таблицы
+        const column = $('#column-dropdown').val(); // Значение выбранного поля
+        const searchText = $('#search-text').val().trim(); // Текст из поля ввода (обрезаем пробелы)
+
+        // Проверка, чтобы все поля были заполнены
+        if (!table) {
+            alert('Пожалуйста, выберите таблицу из списка.');
+            $('#tableSelect').focus();
+            return;
+        }
+        if (!column) {
+            alert('Пожалуйста, выберите поле для поиска.');
+            $('#column-dropdown').focus();
+            return;
+        }
+        if (!searchText) {
+            alert('Пожалуйста, введите текст для поиска.');
+            $('#search-text').focus();
+            return;
+        }
+
+        // Формирование URL для запроса
+        const url = `/poisk/${table}/${column}/${encodeURIComponent(searchText)}`;
+
+        // Выполнение GET-запроса
+        $.get(url, function (data) {
+            $('#table-head').empty();
+            $('#table-body').empty();
+
+
+            // Добавляем строки таблицы
+                $('#table-head').append('<th>Удалить</th>');
+                data.table_head.forEach(field => {
+                    $('#table-head').append(`<th>${field}</th>`);
+                });
+
+                data.table_value.forEach(row => {
+                    const rowHtml = `<tr data-id="${row.id}">` +
+                        `<td><button class="btn btn-danger btn-sm delete-row">Удалить</button></td>` + // Кнопка удаления
+                        data.table_head.map(field => `<td contenteditable="true" data-field="${field}" data-original-value="${row[field]}">${row[field]}</td>`).join('') +
+                        `</tr>`;
+                    $('#table-body').append(rowHtml);
+                });
+
+            // Очищаем форму добавления и создаём поля ввода
+            $('#form-fields').empty();
+            data.table_head.forEach(field => {
+                $('#form-fields').append(`
+                    <div class="form-group row">
+                        <label for="${field}" class="col-sm-4 col-form-label">${field}</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="${field}" name="${field}" required>
+                        </div>
+                    </div>
+                `);
+            });
+
+            dropdown.append('<option value="">Выберите поле</option>'); // Опция по умолчанию
+            data.table_head.forEach(field => {
+                dropdown.append(`<option value="${field}">${field}</option>`);
+            });
+
+        }).fail(function (xhr) {
+            alert(`Ошибка поиска: ${xhr.responseText}`);
+        });
+    });
+});
+
+document.getElementById("openModal").addEventListener("click", () => {
+    $('#addFilmModal').modal('show');  // Используем Bootstrap для показа модального окна
+});
+
+document.getElementById("closeModal").addEventListener("click", () => {
+    $('#addFilmModal').modal('hide');  // Закрываем модальное окно
+});
+
+document.getElementById("filmForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const startProkat = document.getElementById("startProkat").value;
+    const finishProkat = document.getElementById("finishProkat").value;
+
+    // Проверка, что дата окончания не меньше даты начала
+    if (new Date(finishProkat) < new Date(startProkat)) {
+        alert("Дата окончания проката не может быть раньше даты начала.");
+        return;
+    }
+
+    const imageFile = document.getElementById("image").files[0];
+    const posterFile = document.getElementById("poster").files[0];
+    const trailerFile = document.getElementById("trailer").files[0];
+
+    // Проверка, что файл изображения - это изображение
+    if (imageFile && !imageFile.type.startsWith("image/")) {
+        alert("Пожалуйста, загрузите изображение для фильма.");
+        return;
+    }
+
+    // Проверка, что файл постера - это изображение
+    if (posterFile && !posterFile.type.startsWith("image/")) {
+        alert("Пожалуйста, загрузите изображение для постера.");
+        return;
+    }
+
+    // Проверка, что файл трейлера - это видео
+    if (trailerFile && !trailerFile.type.startsWith("video/")) {
+        alert("Пожалуйста, загрузите видео для трейлера.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/add_film", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (response.ok) {
+            alert("Фильм добавлен успешно!");
+            $('#addFilmModal').modal('hide');  // Закрываем модальное окно
+            e.target.reset();
+        } else {
+            alert("Ошибка при добавлении фильма.");
+        }
+    } catch (error) {
+        console.error("Ошибка:", error);
+        alert("Ошибка при добавлении фильма.");
+    }
+});
+
+// Обработчик для кнопки "Добавить билеты"
+    document.getElementById("openModalTicket").addEventListener("click", function() {
+        const ticketId = document.getElementById("ticket-text").value; // Получаем значение из input
+
+        if (!ticketId) {
+            alert("Пожалуйста, введите id сеанса.");
+            return;
+        }
+
+        // Проверка на число
+        if (isNaN(ticketId)) {
+            alert("ID сеанса должно быть числом.");
+            return;
+        }
+
+        // Отправка данных на сервер через fetch
+        fetch("/add_ticket", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", // Указываем, что отправляем данные в формате JSON
+            },
+            body: JSON.stringify({ ticket_id: ticketId }) // Отправляем id сеанса как JSON
+        })
+        .then(response => response.json()) // Ожидаем ответ в формате JSON
+        .then(data => {
+            if (data.status === "success") {
+                alert("Билеты успешно добавлены.");
+            } else {
+                alert("Ошибка: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Ошибка при отправке данных:", error);
+            alert("Произошла ошибка при отправке данных.");
+        });
+    });
+
+</script>
+
+
+</body>
+</html>

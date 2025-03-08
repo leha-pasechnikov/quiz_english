@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секция</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .task-container {
+            background: #ffffff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .task-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .hint {
+            display: inline-block;
+            padding: 5px;
+            background: #e3e3e3;
+            border-radius: 3px;
+            font-style: italic;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            max-width: 100%; /* Ограничиваем ширину таблицы */
+            border-collapse: collapse;
+            margin-top: 10px;
+            overflow-x: auto; /* Добавляем горизонтальную прокрутку */
+            table-layout: fixed; /* Фиксированное расположение ячеек */
+        }
+
+        .task-container {
+            overflow-x: auto; /* Если контент выходит за пределы контейнера, добавляется прокрутка */
+            max-width: 100%; /* Ограничиваем ширину контейнера */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f1f1f1;
+        }
+        input[type="text"] {
+            width: 85%;  /* Поле ввода занимает всю доступную ширину ячейки */
+            padding: 5px;
+            box-sizing: border-box;  /* Включаем отступы и границы в ширину */
+            min-width: 50px;  /* Устанавливаем минимальную ширину поля ввода */
+        }
+
+        .audio-error {
+            color: red;
+            font-style: italic;
+        }
+        .task-text {
+            white-space: pre-line;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+
+    {% if section %}
+        <h1>{% if section.section.title %}{{ section.section.title }}{% else %}Module{% endif %}</h1>
+
+        {% for task in section.section.task %}
+        <div class="task-container">
+            <h2 class="task-title">
+                {% if task.title %}
+                    {{ task.title }}
+                {% else %}
+                    Task
+                {% endif %}
+            </h2>
+            {% if task.hint %}
+                <span class="hint">{{ task.hint }}</span>
+            {% endif %}
+            {% if task.text %}
+                <pre class="task-text">{{ task.text }}</pre>
+            {% endif %}
+
+            {% if task.type == "fix_word" %}
+                <table>
+                    <tr>
+                        <th>№</th>
+                        <th>Текст</th>
+                        <th>Слово</th>
+                        <th>Ответ</th>
+                        <th>Баллы</th>
+                    </tr>
+                    {% for item in task.item %}
+                    <tr>
+                        <td>{{ item.number }}</td>
+                        <td>{{ item.text }}</td>
+                        <td>{{ item.title }}</td>
+                        {% for answer_option in item.answer_option %}
+                            <td><input type="text" name="answer_{{ answer_option.id }}"></td>
+                        {% endfor %}
+                        <td>{{ item.points }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+            {% elif task.type == "text_answer" %}
+                <table>
+                    <tr>
+                        <th>№</th>
+                        {% for answer in task.item[0].answer_option %}
+                            <th>{{ loop.index }}</th>
+                        {% endfor %}
+                        <th>Ответ</th>
+                        <th>Баллы</th>
+                    </tr>
+                    {% for item in task.item %}
+                    <tr>
+                        <td>{{ item.number }}</td>
+                        {% for answer in item.answer_option %}
+                            <td>{{ answer.text }}</td>
+                        {% endfor %}
+<!--                        _1 для доп условия на сервере-->
+                        <td><input type="text" name="answer_{{ item.id }}_1"></td>
+                        <td>{{ item.points }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+            {% elif task.type == "listen_answer" %}
+                {% if task.file_link %}
+                    <audio controls>
+                        <source src="{{ url_for('static', filename='audio/' + task.file_link) }}" type="audio/mpeg">
+                        Ваш браузер не поддерживает аудио.
+                    </audio>
+                {% else %}
+                    <p class="audio-error">Не удалось загрузить аудио</p>
+                {% endif %}
+
+                <table>
+                    <tr>
+                        <th>Утверждение</th>
+                        {% for item in task.item %}
+                            <th>{{ item.number }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Соответствие монологу</td>
+                        {% for item in task.item %}
+                            {% for answer_option in item.answer_option %}
+                                <td><input type="text" name="answer_{{ answer_option.id }}"></td>
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                </table>
+
+            {% elif task.type == "match" %}
+<!--            &lt;!&ndash; Название и подсказка &ndash;&gt;-->
+<!--            <h2>{{ task.title }}</h2>-->
+<!--            <div class="hint">-->
+<!--                {{ task.hint }}-->
+<!--            </div>-->
+
+            <!-- Таблица с item.title -->
+            <table>
+                <tr>
+                    <th>Заголовки</th>
+                </tr>
+                {% for item in task.item %}
+                <tr>
+                    <td>{{ item.title }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+<!--            &lt;!&ndash; Текст задачи &ndash;&gt;-->
+<!--            <p>{{ task.text }}</p>-->
+
+            <!-- Таблица с answer_option.left_text и полями ввода -->
+            <table>
+                <tr>
+                    <!-- Для каждого answer_option выводим left_text в заголовке -->
+                    {% for item in task.item %}
+                        {% for answer in item.answer_option %}
+                            <th>{{ answer.left_text }}</th>
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <!-- Для каждого item создаем поле ввода -->
+                    {% for item in task.item %}
+                        <td>
+                            {% for answer_option in item.answer_option %}
+                                <input type="text" name="answer_{{ answer_option.id }}">
+                            {% endfor %}
+                            <span style="margin-left: 5px;">{{ item.points }} балл(-ов)</span>
+                        </td>
+                    {% endfor %}
+                </tr>
+            </table>
+
+            {% elif task.type == "multiple_choice" %}
+                <hr>
+                {% for item in task.item %}
+                    <p><strong>Вопрос:</strong> {{ item.title }}</p>
+                    <pre class="task-text">{{ item.text }}</pre>
+                    {% for answer_option in item.answer_option %}
+                        <p>Ответ: <input type="text" name="answer_{{ answer_option.id }}"> (Баллы: {{ item.points }})</p>
+                    {% endfor %}
+                    <hr> <!-- Горизонтальная линия для разделения -->
+                {% endfor %}
+            {% endif %}
+
+        </div>
+        {% endfor %}
+        <button id="submit-button">Отправить</button>
+
+    {% else %}
+        <h2>Задания не найдены</h2>
+    {% endif %}
+
+</body>
+<script>
+document.getElementById('submit-button').addEventListener('click', function() {
+    const formData = new FormData(); // Создаём объект FormData
+    const inputs = document.querySelectorAll('input[type="text"]'); // Получаем все текстовые поля
+    let emptyFields = []; // Массив для пустых полей
+
+    // Проходим по всем полям формы
+    inputs.forEach(input => {
+        formData.append(input.name, input.value); // Добавляем данные в FormData
+        if (!input.value) {
+            emptyFields.push(input.name); // Если поле пустое, добавляем в массив
+        }
+    });
+
+    // Если есть пустые поля, показываем предупреждение
+    if (emptyFields.length > 0) {
+        const message = `Не все задания были заполнены. Хотите отправить данные?`;
+        if (!confirm(message)) {
+            return; // Если пользователь не хочет отправлять, выходим
+        }
+    }
+
+    // Получаем ID секции из URL
+    const sectionId = window.location.pathname.split('/').pop();
+
+    // Отправляем данные на сервер с помощью fetch
+    fetch(`${sectionId}`, {
+        method: 'POST',
+        body: formData // Отправляем FormData
+    })
+    .then(response => {
+        if (response.ok) {
+            // Страница будет автоматически перенаправлена сервером после успешной обработки данных
+            window.location.href = response.url; // Редиректим на страницу, на которую нас отправит сервер
+        } else {
+            // Если ошибка на сервере
+            alert('Произошла ошибка при отправке данных');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при отправке данных: ' + error.message); // Выводим сообщение об ошибке
+    });
+});
+
+
+</script>
+</html>

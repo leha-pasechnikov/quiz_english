@@ -1,0 +1,17 @@
+# created by virtualenv automatically
+config.py
+pyvenv.cfg
+
+# Настройки PyCharm
+.idea/
+
+# Виртуальное окружение
+venv/
+Lib/
+Scripts/
+bin/
+
+# Кеш Python
+__pycache__/
+*.pyc
+*.pyo

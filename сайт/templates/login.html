@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация и регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .auth-page-container {
+            position: relative;
+            width: 350px;
+            height: 400px;
+            perspective: 1000px;
+        }
+
+        .main-form {
+            position: absolute;
+            width: 100%;
+            backface-visibility: hidden;
+            transition: transform 0.6s;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .front {
+            transform: rotateY(0deg);
+        }
+
+        .back {
+            transform: rotateY(180deg);
+        }
+
+        .auth-page-container.flipped .front {
+            transform: rotateY(180deg);
+        }
+
+        .auth-page-container.flipped .back {
+            transform: rotateY(360deg);
+        }
+
+        .adm-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .adm-login-row {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .login-input {
+            width: 95%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .password-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .adm-button-action, .adm-button-reverse {
+            padding: 10px;
+            width: 48%;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .adm-button-action {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .adm-button-reverse {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .adm-clearfix {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .reset_password {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .reset_password a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .reset_password a:hover {
+            text-decoration: underline;
+        }
+
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #f8f9fa;
+            border: none;
+            border-radius: 50px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #e2e6ea;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="auth-page-container">
+        <!-- Форма входа -->
+        <div class="main-form front">
+            <button type="button" class="home-button" onclick="location.href='{{ url_for('index') }}'">⌂</button>
+            <h2>Вход</h2>
+            <form class="adm-form" method="POST" action="/login">
+                <div class="adm-login-row">
+                    <input class="login-input" type="text" name="username" placeholder="Логин" required>
+                </div>
+                <div class="adm-login-row password-container">
+                    <input class="login-input" type="password" id="login_password" name="password" placeholder="Пароль" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('login_password', this)">🔒</button>
+                </div>
+                <div class="adm-clearfix">
+                    <button class="adm-button-action" type="submit">Войти</button>
+                    <button class="adm-button-reverse toggler" type="button">Регистрация</button>
+                </div>
+            </form>
+            <div class="reset_password">
+                <a href="{{ url_for('reset_password') }}">Забыли пароль?</a>
+            </div>
+        </div>
+
+        <!-- Форма регистрации -->
+        <div class="main-form back">
+            <button type="button" class="home-button" onclick="location.href='{{ url_for('index') }}'">⌂</button>
+            <h2>Регистрация</h2>
+            <form class="adm-form" method="POST" action="/register" onsubmit="return validateForm()">
+                <div class="adm-login-row">
+                    <input class="login-input" type="text" name="last_name" placeholder="Фамилия" required>
+                </div>
+                <div class="adm-login-row">
+                    <input class="login-input" type="text" name="first_name" placeholder="Имя" required>
+                </div>
+                <div class="adm-login-row">
+                    <input class="login-input" type="text" name="middle_name" placeholder="Отчество" required>
+                </div>
+                <div class="adm-login-row">
+                    <input class="login-input" type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="adm-login-row">
+                    <input class="login-input" type="text" name="username" placeholder="Логин" required>
+                </div>
+                <div class="adm-login-row password-container">
+                    <input class="login-input" type="password" id="register_password" name="password" placeholder="Пароль" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('register_password', this)">🔒</button>
+                </div>
+                <div class="adm-login-row password-container">
+                    <input class="login-input" type="password" id="confirm_password" name="confirm_password" placeholder="Повторите пароль" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirm_password', this)">🔒</button>
+                </div>
+                <div class="adm-clearfix">
+                    <button class="adm-button-action" type="submit">Зарегистрироваться</button>
+                    <button class="adm-button-reverse toggler" type="button">Назад</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const togglerButtons = document.querySelectorAll(".toggler");
+            const authContainer = document.querySelector(".auth-page-container");
+
+            // Отключаем анимацию при начальной установке состояния
+            authContainer.style.transition = 'none'; // Отключаем анимацию
+
+            // Проверяем сохранённое состояние (по умолчанию "login")
+            if (localStorage.getItem("authState") === "register") {
+                authContainer.classList.add("flipped");
+            }
+
+            // Включаем анимацию снова после небольшого времени
+            setTimeout(function() {
+                authContainer.style.transition = ''; // Включаем анимацию обратно
+            }, 10); // Задержка в 10 миллисекунд
+
+            togglerButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    authContainer.classList.toggle("flipped");
+
+                    // Запоминаем состояние (если есть класс "flipped" → "register", иначе "login")
+                    if (authContainer.classList.contains("flipped")) {
+                        localStorage.setItem("authState", "register");
+                    } else {
+                        localStorage.setItem("authState", "login");
+                    }
+                });
+            });
+        });
+
+
+
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                button.textContent = "🔓";
+            } else {
+                input.type = "password";
+                button.textContent = "🔒";
+            }
+        }
+
+        function validateForm() {
+            const password = document.getElementById("register_password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
+            if (password.length < 7) {
+                alert("Пароль должен содержать более 6 символов.");
+                return false;
+            }
+            if (password !== confirmPassword) {
+                alert("Пароли не совпадают.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>
