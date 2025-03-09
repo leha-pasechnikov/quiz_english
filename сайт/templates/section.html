@@ -133,7 +133,7 @@
                     <tr>
                         <td>{{ item.number }}</td>
                         {% for answer in item.answer_option %}
-                            <td>{{ answer.text }}</td>
+                            <td>{{ answer.left_text }}</td>
                         {% endfor %}
 <!--                        _1 для доп условия на сервере-->
                         <td><input type="text" name="answer_{{ item.id }}_1"></td>

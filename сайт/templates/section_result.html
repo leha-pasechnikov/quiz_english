@@ -163,14 +163,14 @@ input[disabled] {
                     <tr>
                         <td>{{ item.number }}</td>
                         {% for answer in item.answer_option %}
-                            <td>{{ answer.text }}</td>
+                            <td>{{ answer.left_text }}</td>
                         {% endfor %}
 <!--                        _1 для доп условия на сервере-->
                         {% for answer_option in item.answer_option %}
                         {% if answer_option.is_correct==1 %}
-                         {% if answer_option.result.text != answer_option.left_text %}
+                         {% if answer_option.result.text != answer_option.text %}
                             <!-- Неправильный ответ - красный фон -->
-                            <td><input type="text" name="answer_{{ answer_option.id }}" value="{{ answer_option.result.text }}" class="wrong" disabled>{{ answer_option.left_text }}</td>
+                            <td><input type="text" name="answer_{{ answer_option.id }}" value="{{ answer_option.result.text }}" class="wrong" disabled>{{ answer_option.text }}</td>
                         {% else %}
                             <!-- Правильный ответ - зеленый фон -->
                             <td><input type="text" name="answer_{{ answer_option.id }}" value="{{ answer_option.result.text }}" class="correct" disabled></td>

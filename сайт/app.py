@@ -17,7 +17,7 @@ from почта.pochta import send_mail
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'static/файлы'
+UPLOAD_FOLDER = 'static/audio'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # Максимальный размер файла 10 МБ
@@ -180,8 +180,24 @@ def leaderboard():
     try:
         conn = connect_to_db()
         cursor = conn.cursor(dictionary=True)
-
-        cursor.execute('SELECT username, score, time_score FROM user ORDER BY score DESC, time_score ASC;')
+        cursor.execute('''
+SELECT
+    u.username AS username,
+    COALESCE(SUM(i.points), 0) AS score,
+    u.time_score AS time_score
+FROM
+    user u
+LEFT JOIN
+    answer_option_result aor ON aor.user_id = u.id
+LEFT JOIN
+    answer_option ao ON ao.id = aor.answer_option_id
+LEFT JOIN
+    item i ON i.id = ao.item_id AND ao.is_correct = TRUE AND aor.text = ao.text
+GROUP BY
+    u.id
+ORDER BY
+    score DESC, time_score ASC;
+''')
         leaderboard = cursor.fetchall()
 
         return render_template('leaderboard.html', leaderboard=leaderboard)
@@ -248,9 +264,9 @@ def register():
             password = request.form['password']
 
             cursor.execute('''
-            INSERT INTO user(last_name,first_name, middle_name, email,username,password,score,note)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s);
-             ''', (last_name, first_name, middle_name, email, username, password, 0, ""))
+            INSERT INTO user(last_name,first_name, middle_name, email,username,password,note)
+            VALUES (%s,%s,%s,%s,%s,%s,%s);
+             ''', (last_name, first_name, middle_name, email, username, password, ""))
 
             user_id = cursor.lastrowid
             conn.commit()
@@ -277,10 +293,30 @@ def personal():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute('''
-        SELECT last_name,first_name, middle_name, email,username,score,note FROM user
+        SELECT last_name,first_name, middle_name, email,username,note FROM user
         WHERE id=%s;
          ''', (session['id'],))
         user_information = cursor.fetchall()
+        cursor.execute('''
+SELECT
+    COALESCE(SUM(i.points), 0) AS score,
+    u.time_score AS time_score
+FROM
+    user u
+LEFT JOIN
+    answer_option_result aor ON aor.user_id = u.id
+LEFT JOIN
+    answer_option ao ON ao.id = aor.answer_option_id
+LEFT JOIN
+    item i ON i.id = ao.item_id AND ao.is_correct = TRUE AND aor.text = ao.text
+WHERE
+    u.id = %s  
+GROUP BY
+    u.id
+ORDER BY
+    score DESC, time_score ASC;
+''', (session['id'],))
+        score = cursor.fetchone()
 
         cursor.execute('''
         SELECT * FROM words
@@ -288,7 +324,7 @@ def personal():
          ''', (session['id'],))
         words_information = cursor.fetchall()
 
-        return render_template('personal.html', user=user_information, words=words_information)
+        return render_template('personal.html', user=user_information, words=words_information, score=score)
 
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
@@ -434,7 +470,7 @@ def section_result(id_section):
                 print('2iuol=', rows)
 
                 if not rows:
-                    return jsonify({'status': 'error', 'message': 'задания не найдены'}), 404
+                    return 'Ваше решение для этого задания не найдено'
 
                 # Структурируем данные в нужный формат
                 section_data = {"section": {"id": rows[0]["section_id"], "title": rows[0]["section_title"], "task": []}}

@@ -321,12 +321,6 @@ button[type="submit"]:hover {
         <button class="btn btn-primary" data-toggle="modal" data-target="#addRecordModal">Добавить запись</button>
     </div>
     <div class="form-group">
-        <button id="openModal" class="btn btn-primary" data-toggle="modal" data-target="#addFilmModal">Добавить фильм</button>
-        <label  style="margin-top:30px;">Выберите сеанс для добавления билетов</label>
-        <input type="text" id="ticket-text" class="form-control" placeholder="Введите id сеанса">
-        <button id="openModalTicket" class="btn btn-primary">Добавить билеты</button>
-    </div>
-    <div class="form-group">
         <label for="column-dropdown">Выберите поле таблицы для поиска:</label>
         <select id="column-dropdown" class="form-control">
             <option value="">Выберите поле</option>
@@ -770,107 +764,6 @@ $(document).ready(function () {
     });
 });
 
-document.getElementById("openModal").addEventListener("click", () => {
-    $('#addFilmModal').modal('show');  // Используем Bootstrap для показа модального окна
-});
-
-document.getElementById("closeModal").addEventListener("click", () => {
-    $('#addFilmModal').modal('hide');  // Закрываем модальное окно
-});
-
-document.getElementById("filmForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const startProkat = document.getElementById("startProkat").value;
-    const finishProkat = document.getElementById("finishProkat").value;
-
-    // Проверка, что дата окончания не меньше даты начала
-    if (new Date(finishProkat) < new Date(startProkat)) {
-        alert("Дата окончания проката не может быть раньше даты начала.");
-        return;
-    }
-
-    const imageFile = document.getElementById("image").files[0];
-    const posterFile = document.getElementById("poster").files[0];
-    const trailerFile = document.getElementById("trailer").files[0];
-
-    // Проверка, что файл изображения - это изображение
-    if (imageFile && !imageFile.type.startsWith("image/")) {
-        alert("Пожалуйста, загрузите изображение для фильма.");
-        return;
-    }
-
-    // Проверка, что файл постера - это изображение
-    if (posterFile && !posterFile.type.startsWith("image/")) {
-        alert("Пожалуйста, загрузите изображение для постера.");
-        return;
-    }
-
-    // Проверка, что файл трейлера - это видео
-    if (trailerFile && !trailerFile.type.startsWith("video/")) {
-        alert("Пожалуйста, загрузите видео для трейлера.");
-        return;
-    }
-
-    try {
-        const response = await fetch("/add_film", {
-            method: "POST",
-            body: formData,
-        });
-
-        if (response.ok) {
-            alert("Фильм добавлен успешно!");
-            $('#addFilmModal').modal('hide');  // Закрываем модальное окно
-            e.target.reset();
-        } else {
-            alert("Ошибка при добавлении фильма.");
-        }
-    } catch (error) {
-        console.error("Ошибка:", error);
-        alert("Ошибка при добавлении фильма.");
-    }
-});
-
-// Обработчик для кнопки "Добавить билеты"
-    document.getElementById("openModalTicket").addEventListener("click", function() {
-        const ticketId = document.getElementById("ticket-text").value; // Получаем значение из input
-
-        if (!ticketId) {
-            alert("Пожалуйста, введите id сеанса.");
-            return;
-        }
-
-        // Проверка на число
-        if (isNaN(ticketId)) {
-            alert("ID сеанса должно быть числом.");
-            return;
-        }
-
-        // Отправка данных на сервер через fetch
-        fetch("/add_ticket", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json", // Указываем, что отправляем данные в формате JSON
-            },
-            body: JSON.stringify({ ticket_id: ticketId }) // Отправляем id сеанса как JSON
-        })
-        .then(response => response.json()) // Ожидаем ответ в формате JSON
-        .then(data => {
-            if (data.status === "success") {
-                alert("Билеты успешно добавлены.");
-            } else {
-                alert("Ошибка: " + data.message);
-            }
-        })
-        .catch(error => {
-            console.error("Ошибка при отправке данных:", error);
-            alert("Произошла ошибка при отправке данных.");
-        });
-    });
-
 </script>
-
-
 </body>
 </html>

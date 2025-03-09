@@ -206,15 +206,47 @@ main {
 }
 
 
+.logout-button {
+    margin-left: auto; /* Сдвигает кнопку "Выйти" вправо */
+    background-color: red;
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    position: absolute; /* Относительно родительского элемента */
+    right: 20px; /* Сдвигает кнопку к правому краю */
+    top: 20px; /* Немного отступаем сверху */
+}
+
+.logout-button:hover {
+    background-color: darkred;
+}
+
+
     </style>
 </head>
 <body>
     <header>
         <h1>WWII Quiz</h1>
-        <nav>
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
-        </nav>
+            <nav>
+                <div class="nav-left">
+                    {% if 'id' in session %}
+
+                        {% if 'is_admin' in session and session['is_admin'] == True %}
+                            <a href="{{ url_for('admin') }}">Admin panel</a>
+                        {% else %}
+                            <a href="{{ url_for('personal') }}">Personal</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('login') }}">Login</a>
+                    {% endif %}
+                    <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
+                </div>
+            </nav>
+                {% if 'id' in session %}
+                    <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+                {% endif %}
+
     </header>
     <main>
         <h2>Select a topic:</h2>
