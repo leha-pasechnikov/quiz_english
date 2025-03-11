@@ -349,7 +349,9 @@ def edit_note():
             return jsonify({'status': 'success', 'message': 'блокнот очищен'}), 200
 
         data = request.json
+        print(data)
         new_note = data.get('note')
+        print(new_note)
 
         if request.method == 'PUT':
             cursor.execute('''UPDATE user SET note=%s where id=%s''', (new_note, session['id']))
@@ -366,17 +368,51 @@ def edit_note():
             conn.close()
 
 
-@app.route('/personal/word/<int:id_word>', methods=['POST', 'PUT', 'DELETE'])
+@app.route('/personal/word/<int:id_word>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @is_id()
 def edit_word(id_word):
-    if id_word < 0 or (id_word == 0 and request.method != 'POST'):
+    if id_word < 0 or (id_word == 0 and request.method not in ('POST', 'GET')):
         return jsonify({'status': 'error', 'message': 'некорректный id'}), 400
     try:
         conn = connect_to_db()
         cursor = conn.cursor(dictionary=True)
 
+
+        if request.method == 'GET':
+            if id_word == 0:
+                cursor.execute('SELECT * FROM words where user_id=%s', (session['id'],))
+                word = cursor.fetchall()
+            else:
+                cursor.execute('SELECT * FROM words where id=%s', (id_word,))
+                word = cursor.fetchone()
+            return jsonify({'status': 'success', 'message': word}), 200
+
+
+        if request.method == 'DELETE':
+            cursor.execute('DELETE FROM words where id=%s', (id_word,))
+            conn.commit()
+            return jsonify({'status': 'success', 'message': 'слово удалено'}), 200
+
+
+        data = request.json
+        new_word = data.get('word')
+        new_transcription = data.get('transcription')
+
+        if request.method == 'POST':
+            if id_word != 0:
+                cursor.execute('INSERT INTO words(id,user_id,word,transcription) VALUES  (%s, %s, %s, %s)',
+                               (id_word, session['id'], new_word, new_transcription))
+            else:
+                cursor.execute('INSERT INTO words(user_id,word,transcription) VALUES  (%s, %s, %s)',
+                               (session['id'], new_word, new_transcription))
+            last_id = cursor.lastrowid
+            conn.commit()
+            return jsonify({'status': 'success', 'message': 'слово добавлено', 'last_id': last_id}), 200
+
+
         cursor.execute('SELECT * FROM words where id=%s', (id_word,))
         word = cursor.fetchone()
+
         if word is None:
             return jsonify({'status': 'error', 'message': 'слово не найдено'}), 404
         if 'user_id' in word:
@@ -385,31 +421,12 @@ def edit_word(id_word):
         else:
             return jsonify({'status': 'error', 'message': 'не найден создатель слова'}), 404
 
-        if request.method == 'DELETE':
-            cursor.execute('DELETE FROM words where id=%s', (id_word,))
-            conn.commit()
-            return jsonify({'status': 'success', 'message': 'слово удалено'}), 200
-
-        data = request.json
-        new_word = data.get('word')
-        new_transcription = data.get('transcription')
-
         if request.method == 'PUT':
             cursor.execute('''UPDATE words SET word= %s, transcription= %s where id= %s''',
                            (new_word, new_transcription, id_word))
             conn.commit()
             return jsonify({'status': 'success', 'message': 'слово обновлено'}), 200
 
-        if request.method == 'POST':
-            if id_word != 0:
-                cursor.execute('INSERT INTO words(id,user_id,word,transcription) VALUES  (%s, %s, %s, %s)',
-                               (id_word, new_word, new_transcription, id_word))
-            else:
-                cursor.execute('INSERT INTO words(user_id,word,transcription) VALUES  (%s, %s, %s)',
-                               (new_word, new_transcription, id_word))
-            last_id = cursor.lastrowid
-            conn.commit()
-            return jsonify({'status': 'success', 'message': 'слово добавлено', 'last_id': last_id}), 200
 
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
@@ -770,7 +787,6 @@ def admin():
                     cursor.execute(f'USE {MYSQL_DATABASE};')
                     cursor.execute('SHOW TABLES;')
                     tables = cursor.fetchall()
-                    print('tables=', tables)
 
                 except Exception as e:
                     flash('Произошла ошибка: ' + str(e), 'error')
@@ -802,11 +818,9 @@ def table(table):
                 table_head = [i['Field'] for i in cursor.fetchall()]
 
 
-                print(table_head)
 
                 if request.method == 'POST':
                     data = request.get_json()  # Получаем JSON данные
-                    print('data= ', data)
 
                     for i in data:
                         if data[i] == '':
@@ -832,7 +846,6 @@ def table(table):
                 # Получаем данные таблицы
                 cursor.execute(f'SELECT * FROM {table}')
                 table_value = cursor.fetchall()
-                print(table_value)
                 for mas in table_value:
                     for i in mas:
                         if isinstance(mas[i], datetime):
