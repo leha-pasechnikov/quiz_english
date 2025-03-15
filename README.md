@@ -46,7 +46,7 @@ english/
    copy config.example.py config.py
    ```
 
-4. Запустите [бд/quiz_english.sql](quiz_english.sql) в mysql server
+4. Запустите [бд/quiz_english.sql](бд/quiz_english.sql) в mysql server
 
 5. Запустите главный файл:
    ```bash
