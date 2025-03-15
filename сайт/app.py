@@ -17,7 +17,8 @@ from почта.pochta import send_mail
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'static/audio'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'audio')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # Максимальный размер файла 10 МБ

@@ -1,394 +1,342 @@
 <!DOCTYPE html>
 <html lang="ru">
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f4f4f4;
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.container {
+    display: flex;
+    max-width: 800px;
+    width: 100%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    position: relative;
+}
+.block {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 5px;
+}
+.block-content {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+textarea {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+    height: 300px;
+}
+input {
+    width: 48%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+button {
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover {
+    background: #218838;
+}
+.toggle-btn {
+    margin-bottom: 10px;
+    background: #007bff;
+}
+.toggle-btn:hover {
+    background: #0056b3;
+}
+.word-card {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    perspective: 1000px;
+}
+.word-inner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 50px;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+.word-card.flipped .word-inner {
+    transform: rotateY(180deg);
+}
+.word-front, .word-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+.word-back {
+    transform: rotateY(180deg);
+    background: #ffc107;
+}
+.hidden {
+    display: none;
+}
+.lang-buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+}
+.lang-buttons button {
+    background: #007bff;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+.lang-buttons button:hover {
+    background: #0056b3;
+}
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 10px;
+}
+.modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.modal button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.modal button:hover {
+    background-color: #0056b3;
+}
+
+</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f4f4f4;
-            text-align: center;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            display: flex;
-            max-width: 800px;
-            width: 100%;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            justify-content: space-between;
-            position: relative;
-        }
-        .block {
-            width: 48%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #ffffff;
-            border-radius: 5px;
-        }
-        .block-content {
-            flex-grow: 1;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        textarea {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: none;
-            height: 300px;
-        }
-        input {
-            width: 48%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #218838;
-        }
-        .toggle-btn {
-            margin-bottom: 10px;
-            background: #007bff;
-        }
-        .toggle-btn:hover {
-            background: #0056b3;
-        }
-        .word-card {
-            position: relative;
-            width: 100%;
-            height: 50px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            perspective: 1000px;
-        }
-        .word-inner {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            line-height: 50px;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        .word-card.flipped .word-inner {
-            transform: rotateY(180deg);
-        }
-        .word-front, .word-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-        }
-        .word-back {
-            transform: rotateY(180deg);
-            background: #ffc107;
-        }
-        .hidden {
-            display: none;
-        }
-        .lang-buttons {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 10px;
-        }
-        .lang-buttons button {
-            background: #007bff;
-            padding: 5px 10px;
-            font-size: 14px;
-        }
-        .lang-buttons button:hover {
-            background: #0056b3;
-        }
-
-        /* Модальное окно */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4); /* Черный фон */
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .modal button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-
-        .modal button:hover {
-            background-color: #0056b3;
-        }
-
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h2>Личный кабинет</h2>
     <div class="container">
-        <div class="block">
-            <button class="toggle-btn" onclick="toggleSection('notes-content')">Скрыть/Показать блокнот</button>
-            <div class="block-content" id="notes-content">
-                <h3>Блокнот</h3>
-                <textarea id="notes" placeholder="Ваши заметки..."></textarea>
-            </div>
+        <h1>Личный кабинет</h1>
+        <h2>Привет, {{ user[0]['last_name'] }} {{ user[0]['first_name'] }} {{ user[0]['middle_name'] }}</h2>
+        <p>Email: {{ user[0]['email'] }}</p>
+        <p>Имя пользователя: {{ user[0]['username'] }}</p>
+
+        <div class="score">
+            <h3>Ваши очки: {{ score['score'] }}</h3>
+            <p>Время последнего обновления: {{ score['time_score'] }}</p>
         </div>
-        <div class="block">
-            <button class="toggle-btn" onclick="toggleSection('words-content', true)">Скрыть/Показать словарь</button>
-            <div class="lang-buttons" id="lang-buttons">
-                <button onclick="setLanguage('ru')">RU</button>
-                <button onclick="setLanguage('en')">EN</button>
-            </div>
-            <div class="block-content" id="words-content">
-                <h3>Словарь</h3>
-                <input type="text" id="english-word" placeholder="Английское слово">
-                <input type="text" id="russian-word" placeholder="Русский перевод">
-                <button onclick="addWord()">Добавить</button>
-                <div id="word-list"></div>
-            </div>
+
+        <div class="note">
+            <h3>Ваш блокнот:</h3>
+            <textarea id="noteContent" placeholder="Введите заметки...">{{ user[0]['note'] }}</textarea>
+            <button id="saveNoteBtn">Сохранить</button>
+            <button id="clearNoteBtn">Очистить</button>
+        </div>
+
+        <div class="words">
+            <h3>Ваши слова:</h3>
+            <ul id="wordList">
+                {% for word in words %}
+                    <li data-id="{{ word.id }}">
+                        <span class="word-text">{{ word.word }}</span> - <span class="word-transcription">{{ word.transcription }}</span>
+                        <button class="editWordBtn">Редактировать</button>
+                        <button class="deleteWordBtn">Удалить</button>
+                    </li>
+                {% endfor %}
+            </ul>
+            <button id="addWordBtn">Добавить новое слово</button>
         </div>
     </div>
-    <!-- Модальное окно для редактирования -->
-    <div id="editModal" class="modal">
+
+    <!-- Модальные окна для редактирования и добавления слов -->
+    <div id="wordModal" class="modal">
         <div class="modal-content">
-            <h3>Редактирование слова</h3>
-            <input type="text" id="edit-english" placeholder="Английское слово">
-            <input type="text" id="edit-russian" placeholder="Русский перевод">
-            <button onclick="saveEditedWord()">Сохранить</button>
-            <button onclick="closeModal()">Закрыть</button>
+            <h3 id="modalTitle">Добавить слово</h3>
+            <input type="text" id="wordInput" placeholder="Введите слово" />
+            <input type="text" id="transcriptionInput" placeholder="Введите транскрипцию" />
+            <button id="saveWordBtn">Сохранить</button>
+            <button id="closeModalBtn">Закрыть</button>
         </div>
     </div>
-
-    <button id="save-btn" onclick="saveNotes()">Сохранить заметки</button>
-    <button id="clear-btn" onclick="confirmClear()">Очистить заметки</button>
-    <p id="note-status"></p>
-
 
     <script>
-    function saveNotes() {
-            let notes = document.getElementById("notes").value.trim();
-            if (notes) {
-                localStorage.setItem("notes", notes);
-                document.getElementById("note-status").textContent = "Заметки сохранены.";
-            } else {
-                document.getElementById("note-status").textContent = "Заметки не содержат текста.";
-            }
-        }
+        // Получение элементов
+const saveNoteBtn = document.getElementById('saveNoteBtn');
+const clearNoteBtn = document.getElementById('clearNoteBtn');
+const wordList = document.getElementById('wordList');
+const addWordBtn = document.getElementById('addWordBtn');
+const wordModal = document.getElementById('wordModal');
+const saveWordBtn = document.getElementById('saveWordBtn');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const wordInput = document.getElementById('wordInput');
+const transcriptionInput = document.getElementById('transcriptionInput');
+const modalTitle = document.getElementById('modalTitle');
 
-        function confirmClear() {
-            if (confirm("Вы уверены, что хотите очистить все заметки?")) {
-                document.getElementById("notes").value = "";
-                localStorage.removeItem("notes");
-                document.getElementById("note-status").textContent = "Заметки очищены.";
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            let savedNotes = localStorage.getItem("notes");
-            if (savedNotes) {
-                document.getElementById("notes").value = savedNotes;
-            }
-        });
-<!--    11111111111111111111111111111111111111111111-->
-        let currentCard; // Переменная для хранения текущей карточки
-
-        function editWord(card) {
-            currentCard = card;
-            let eng = card.querySelector(".word-front").textContent;
-            let rus = card.querySelector(".word-back").textContent;
-
-            // Заполняем поля для редактирования
-            document.getElementById("edit-english").value = eng;
-            document.getElementById("edit-russian").value = rus;
-
-            // Открываем модальное окно
-            document.getElementById("editModal").style.display = "block";
-        }
-
-        function closeModal() {
-            document.getElementById("editModal").style.display = "none";
-        }
-
-        function saveEditedWord() {
-            let newEng = document.getElementById("edit-english").value.trim();
-            let newRus = document.getElementById("edit-russian").value.trim();
-
-            if (!newEng || !newRus) return; // Не сохраняем, если поля пустые
-
-            // Обновляем содержимое карточки
-            currentCard.querySelector(".word-front").textContent = newEng;
-            currentCard.querySelector(".word-back").textContent = newRus;
-
-            // Закрываем модальное окно
-            closeModal();
-
-            saveWords(); // Сохраняем изменения в локальном хранилище
-        }
-
-
-        function deleteWord(card) {
-            if (confirm("Вы уверены, что хотите удалить это слово?")) {
-                card.remove();
-                saveWords(); // Сохраняем изменения после удаления
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadWords();
-            applyStoredLanguage();
+// Функция для сохранения заметки
+saveNoteBtn.addEventListener('click', async () => {
+    const noteContent = document.getElementById('noteContent').value;
+    try {
+        const response = await fetch('/personal/note', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ note: noteContent })
         });
 
-        function toggleSection(id, isWordSection = false) {
-            let section = document.getElementById(id);
-            section.classList.toggle("hidden");
+        const result = await response.json();
+        alert(result.message);
+    } catch (error) {
+        alert('Ошибка при сохранении заметки');
+    }
+});
 
-            if (isWordSection) {
-                document.getElementById("lang-buttons").classList.toggle("hidden", section.classList.contains("hidden"));
+// Функция для очистки заметки
+clearNoteBtn.addEventListener('click', async () => {
+    try {
+        const response = await fetch('/personal/note', {
+            method: 'DELETE'
+        });
+
+        const result = await response.json();
+        alert(result.message);
+        document.getElementById('noteContent').value = '';
+    } catch (error) {
+        alert('Ошибка при очистке заметки');
+    }
+});
+
+// Открытие модального окна для добавления слова
+addWordBtn.addEventListener('click', () => {
+    modalTitle.textContent = 'Добавить слово';
+    wordInput.value = '';
+    transcriptionInput.value = '';
+    wordModal.style.display = 'block';
+});
+
+// Закрытие модального окна
+closeModalBtn.addEventListener('click', () => {
+    wordModal.style.display = 'none';
+});
+
+// Сохранение нового или отредактированного слова
+saveWordBtn.addEventListener('click', async () => {
+    const word = wordInput.value;
+    const transcription = transcriptionInput.value;
+
+    const method = modalTitle.textContent === 'Добавить слово' ? 'POST' : 'PUT';
+    const id = modalTitle.textContent !== 'Добавить слово' ? wordModal.dataset.id : null;
+
+    try {
+        const response = await fetch(`/personal/word/${id || 0}`, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ word, transcription })
+        });
+
+        const result = await response.json();
+        alert(result.message);
+        if (result.status === 'success') {
+            location.reload();
+        }
+    } catch (error) {
+        alert('Ошибка при сохранении слова');
+    }
+});
+
+// Редактирование слова
+wordList.addEventListener('click', async (event) => {
+    if (event.target.classList.contains('editWordBtn')) {
+        const wordItem = event.target.closest('li');
+        const wordId = wordItem.dataset.id;
+        const wordText = wordItem.querySelector('.word-text').textContent;
+        const transcriptionText = wordItem.querySelector('.word-transcription').textContent;
+
+        modalTitle.textContent = 'Редактировать слово';
+        wordInput.value = wordText;
+        transcriptionInput.value = transcriptionText;
+        wordModal.style.display = 'block';
+        wordModal.dataset.id = wordId;
+    }
+
+    if (event.target.classList.contains('deleteWordBtn')) {
+        const wordItem = event.target.closest('li');
+        const wordId = wordItem.dataset.id;
+
+        try {
+            const response = await fetch(`/personal/word/${wordId}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            if (result.status === 'success') {
+                wordItem.remove();
             }
+        } catch (error) {
+            alert('Ошибка при удалении слова');
         }
+    }
+});
 
-        function addWord() {
-            let eng = document.getElementById("english-word").value.trim();
-            let rus = document.getElementById("russian-word").value.trim();
-            if (!eng || !rus) return;
-
-            let card = createWordCard(eng, rus);
-            document.getElementById("word-list").appendChild(card);
-
-            document.getElementById("english-word").value = "";
-            document.getElementById("russian-word").value = "";
-
-            saveWords();
-        }
-
-        function createWordCard(eng, rus) {
-            let card = document.createElement("div");
-            card.className = "word-card";
-
-            let inner = document.createElement("div");
-            inner.className = "word-inner";
-
-            let front = document.createElement("div");
-            front.className = "word-front";
-            front.textContent = eng;
-
-            let back = document.createElement("div");
-            back.className = "word-back";
-            back.textContent = rus;
-
-            inner.appendChild(front);
-            inner.appendChild(back);
-            card.appendChild(inner);
-
-            // Добавляем кнопки для редактирования и удаления
-            let buttonsDiv = document.createElement("div");
-            buttonsDiv.className = "lang-buttons";
-
-            let editButton = document.createElement("button");
-            editButton.textContent = "✏️";
-            editButton.onclick = function() {
-                editWord(card);
-            };
-
-            let deleteButton = document.createElement("button");
-            deleteButton.textContent = "🗑";
-            deleteButton.onclick = function() {
-                deleteWord(card);
-            };
-
-            buttonsDiv.appendChild(editButton);
-            buttonsDiv.appendChild(deleteButton);
-            card.appendChild(buttonsDiv);
-
-            card.onclick = function () {
-                card.classList.toggle("flipped");
-            };
-
-            return card;
-        }
-
-        function setLanguage(lang) {
-            let cards = document.querySelectorAll(".word-card");
-            cards.forEach(card => {
-                card.classList.toggle("flipped", lang === "ru");
-            });
-
-            localStorage.setItem("selectedLanguage", lang);
-        }
-
-        function applyStoredLanguage() {
-            let lang = localStorage.getItem("selectedLanguage") || "en";
-            setLanguage(lang);
-        }
-
-        function saveWords() {
-            let words = [];
-            document.querySelectorAll(".word-card").forEach(card => {
-                let eng = card.querySelector(".word-front").textContent;
-                let rus = card.querySelector(".word-back").textContent;
-                words.push({ eng, rus });
-            });
-            localStorage.setItem("words", JSON.stringify(words));
-        }
-
-        function loadWords() {
-            let words = JSON.parse(localStorage.getItem("words") || "[]");
-            words.forEach(word => {
-                let card = createWordCard(word.eng, word.rus);
-                document.getElementById("word-list").appendChild(card);
-            });
-        }
     </script>
 </body>
 </html>
