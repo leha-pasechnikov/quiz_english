@@ -18,9 +18,7 @@ CREATE TABLE user (
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-
     time_score TIMESTAMP NOT NULL, -- время изменения очков в триггере
-
     note TEXT(25000) NOT NULL -- заметки пользователя
 );
 
@@ -95,7 +93,7 @@ CREATE TABLE task (
 CREATE TABLE item (
     id INT AUTO_INCREMENT PRIMARY KEY,
     task_id INT NOT NULL,
-    title VARCHAR(255) NULL, -- название пункта
+    title VARCHAR(355) NULL, -- название пункта
     number VARCHAR(10) NULL, -- номер пункта если надо
     text TEXT NULL, -- содержание пунктов если надо
     points INT NOT NULL, -- кол-во баллов за один верный ответ
@@ -561,7 +559,7 @@ INSERT INTO topic(id, title) VALUES
 (2, "Military-Political Outcomes and Lessons of the War"),
 (3, "The causes of the Second World War"),
 (4, "The main events of the Second World War"),
-(5, "Вопросы для итоговой викторины");
+(5, "Final Test");
 
 INSERT INTO section(id,topic_id,title) VALUES
 (1,1,"Grammar and Vocabulary"),
@@ -582,7 +580,12 @@ INSERT INTO section(id,topic_id,title) VALUES
 (13, 4, "Grammar and Vocabulary"),
 (14, 4, "Listening"),
 (15, 4, "Reading"),
-(16, 4, "Test yourself");
+(16, 4, "Test yourself"),
+
+(17, 5, "Final questions 1"),
+(18, 5, "Final questions 2"),
+(19, 5, "Final questions 3"),
+(20, 5, "Final questions 4");
 
 -- Military arts
 -- Grammar and Vocabulary
@@ -2633,3 +2636,214 @@ d) on September 2, 1945, at the government palace in Tokyo\"
 INSERT INTO answer_option(id, item_id, left_text, text, is_correct) VALUES
 (343,248,null, "b", TRUE);
 
+-- Final questions 1
+INSERT INTO task(id,section_id, hint, title, file_link, text, text_after_answer, type) VALUES
+(28,17,
+null,
+null,
+null,
+null,
+null,
+"multiple_choice");
+
+INSERT INTO item(id, task_id, title, text, points, number) VALUES
+(249,28,"1)	What did the priority of political and military-strategic considerations of the victorious states lead to, ignoring the interests of the defeated and newly formed countries? ",
+"a)	To strengthen peace and stability in Europe.
+b)	To resolve all territorial disputes in Europe.
+c)	To the rapid economic recovery of the defeated countries.
+d)	It has led to many territorial disputes and national problems in Europe.
+",1,null),
+
+(250,28,"2)	How did the safeguarding of departmental priorities affect the process of military strategy development?",
+"a)	It enhanced the impartiality of planning.
+b)	It diminished the impartiality of planning.
+c)	It enhanced the effectiveness of planning.
+d)	It had no impact.
+",1,null),
+
+(251,28,"3)	How did the Munich Agreement affect Germany?",
+"a)	It led to the political isolation of Germany.
+b)	It weakened the German economy.
+c)	However, it also strengthened Germany in some ways.
+d)	For example, it forced Germany to abandon its expansionist policies.
+",1,null),
+
+(252,28,"4)	What was the driving force behind the leaders of the fascist alliance, fueled by Russophobia?",
+"a)	The ambition to dismantle the socialist system in the Soviet Union.
+b)	The pursuit of democratic progress in Europe.
+c)	The aspiration to establish a unified European nation.
+d)	The quest for religious harmony.
+",1,null),
+
+(253,28,"5)	What factor was not the main reason for the aggravation of the international situation in the 1930s? ",
+"a)	Double standards in the politics of the leading countries
+b)	The growing internal contradictions in the leading countries
+c)	The crisis of the system of international relations after the First World War
+d)	Strengthening the role of international organizations
+",1,null);
+
+INSERT INTO answer_option(id, item_id, left_text, text, is_correct) VALUES
+(344,249,null, "d", TRUE),
+(345,250,null, "b", TRUE),
+(346,251,null, "c", TRUE),
+(347,252,null, "a", TRUE),
+(348,253,null, "d", TRUE);
+
+-- Final questions 2
+INSERT INTO task(id,section_id, hint, title, file_link, text, text_after_answer, type) VALUES
+(29,18,
+null,
+null,
+null,
+null,
+null,
+"multiple_choice");
+
+INSERT INTO item(id, task_id, title, text, points, number) VALUES
+(254,29,"1.	The strengthening of state power in the USSR during the 1920s and 1930s played a significant role in the development of the country's economy, industry, and agriculture, as well as its armed forces. Simultaneously, the process of consolidating the personal power of Joseph Stalin was taking place. These processes",
+"a) met the state interests of the Soviet Union and contributed to strengthening its power, increasing its defense capability and prestige in the international arena, which was what Stalin desired;
+b) were connected to Stalin's desire to eliminate rivals in power structures and were driven solely by his personal ambitions;
+c) demonstrated Stalin's aggressive nature and his ambition to dominate the entire world;
+d) were brought to life by Stalin's personal characteristics, his greed, and his thirst for power.
+",1,null),
+
+(255,29,"2.	In the Battle of Moscow, which took place from September 30, 1941 to April 20, 1942, ",
+"a) the largest group of Wehrmacht troops, including the 6th Field Army and part of the 4th Tank Army under the leadership of Field Marshal Paulus, were surrounded and destroyed;
+b) a fundamental turning point in the war began, with Germany suffering its first major defeat since September 1st, 1939;
+c) the main battle was the upcoming Battle of Borodino, during which the offensive of Army Group Center's main forces was stopped;
+d) Katyusha rocket launchers were used for the first time in combat conditions, earning artillery the formidable nickname of \"the god of war\".
+",1,null),
+
+(256,29,"3.	According to the plan of the Soviet command, during the Belorussian strategic offensive operation (June 23 – August 29, 1944), a form of maneuver in the offensive of Soviet troops was",
+"a) a \"pincer\" attack – a flanking attack from different directions on the main enemy forces;
+b) a \"frontal crushing attack\" - the simultaneous offensive of the 1st Baltic, 3rd, 2nd, and 1st Belarussian fronts;
+c) a \"flanking cutting off attack\" that led to the strike group reaching the Baltic Sea, cutting off the main forces of Army Group Center from the rest of the Wehrmacht;
+d) a \"double pincer\" maneuver - the encirclement and destruction of enemy flank groups, followed by covering the gaps created along the converging lines of the main forces.
+",1,null),
+
+(257,29,"4. Name the operations in which the Soviet troops, during the strategic offensive, implemented a method of defeating the enemy that involved dissecting or fragmenting large groups and subsequently destroying them. ",
+"a) the East Prussian Operation;
+b) the Dnieper-Carpathian Operation;
+c) the Iasi-Kishinev Operation;
+d) the Oryol Operation.
+",1,null),
+
+(258,29,"5.	In time, the Allied El Alamein offensive coincided with the following developments on the Soviet-German front.",
+"a)	The Battle of Moscow;
+b)	The Battle of Kursk;
+c)	The Battle of Smolensk;
+d)	The Battle of Stalingrad.
+",1,null);
+
+INSERT INTO answer_option(id, item_id, left_text, text, is_correct) VALUES
+(349,254,null, "a", TRUE),
+(350,255,null, "b", TRUE),
+(351,256,null, "d", TRUE),
+(352,257,null, "bd", TRUE),
+(353,258,null, "d", TRUE);
+
+-- Final questions 3
+INSERT INTO task(id,section_id, hint, title, file_link, text, text_after_answer, type) VALUES
+(30,19,
+null,
+null,
+null,
+null,
+null,
+"multiple_choice");
+
+INSERT INTO item(id, task_id, title, text, points, number) VALUES
+(259,30,"1. What was one of the main reasons for the Soviet Union's initial defeats in the early months of the Great Patriotic War?",
+"A) The USSR did not have a sufficient number of military personnel.
+B) The training quality of military personnel was inadequate.
+C) The Soviet industry was unable to produce military equipment.
+D) The soldiers were poorly motivated to fight.
+",1,null),
+
+(260,30,"2. Which of the following statements best captures the significance of the Tehran Conference in the context of the Anti-Hitler Coalition’s strategy during World War II?",
+"A) The Tehran Conference was the first instance where the USSR, the USA, and Great Britain agreed on the necessity of military support for each other.
+B) The Tehran Conference highlighted the persistent doubts among the Allies regarding the Soviet Union’s ability to defeat Germany without external military intervention.
+C) The Tehran Conference marked the moment when the Allies definitively decided the location and timing of the second front against Germany, significantly altering the course of the war.
+D) The Tehran Conference served primarily as a platform for discussing economic assistance between the USSR and the Western powers, laying the groundwork for post-war reconstruction.
+",1,null),
+
+(261,30,"3. What are the primary motivations behind the Lend-Lease program as it pertains to the assistance provided to the Soviet Union during World War II?",
+"A) The Lend-Lease program was primarily aimed at ensuring the immediate victory of the USSR over Germany, thus contributing significantly to the outcome of World War II.
+B) The assistance under the Lend-Lease program was based mainly on the financial interests of the United States, rather than altruistic motivations towards the Allies, influencing the type and quality of supplies sent.
+C) The program facilitated a mutual exchange of advanced technology and military innovations among Allies, ensuring that they all had access to the best available resources.
+D) The relationship established through the Lend-Lease program was characterized by a lack of financial obligations and commitments for the USSR after the conclusion of the war.
+",1,null),
+
+(262,30,"4. What was a key principle established by the Nuremberg Trials regarding the prosecution of wartime actions?",
+"A) Individuals and criminal organizations could be held accountable for their actions.
+B) Only heads of state could be prosecuted for war crimes.
+C) The trials focused solely on acts committed by the military.
+D) Statutes of limitations applied to all war crimes.
+",1,null),
+
+(263,30,"5. Which of the following statements best summarizes the main component of the price of victory for the Soviet Union in the Great Patriotic War?",
+"A) The estimates of the total demographic losses were staggering due to the extensive destruction of infrastructure.
+B) The price of victory for the Soviet Union in the Great Patriotic War is primarily defined by human sacrifice.
+C) The war brought significant economic resources to the Soviet state, allowing for rapid recovery post-war.
+D) The impact of the war on foreign relations is the most significant aspect of understanding the cost of victory.
+",1,null);
+
+INSERT INTO answer_option(id, item_id, left_text, text, is_correct) VALUES
+(354,259,null, "b", TRUE),
+(355,260,null, "c", TRUE),
+(356,261,null, "b", TRUE),
+(357,262,null, "a", TRUE),
+(358,263,null, "b", TRUE);
+
+-- Final questions 4
+INSERT INTO task(id,section_id, hint, title, file_link, text, text_after_answer, type) VALUES
+(31,20,
+null,
+null,
+null,
+null,
+null,
+"multiple_choice");
+
+INSERT INTO item(id, task_id, title, text, points, number) VALUES
+(264,31,"1. What was the primary factor that led to Japan’s surrender in World War II?",
+"A) The Soviet Union's entry into the war and the defeat of the Kwantung Army
+B) The atomic bombings of Hiroshima and Nagasaki
+C) The U.S. capture of the Philippine Islands and Burma
+D) The naval blockade imposed by the United States
+",1,null),
+
+(265,31,"2. Why did the Allies decide to accelerate the opening of the second front in Western Europe in 1944?",
+"A) The Soviet Union demanded military assistance on the Eastern Front
+B) The Western Allies feared the complete liberation of Europe by Soviet forces
+C) Germany’s counteroffensive in the Ardennes forced them to act
+D) The United States had successfully weakened Japan in the Pacific
+",1,null),
+
+(266,31,"3. What was the strategic significance of the Battle of Kursk in 1943?",
+"A) It marked the last major German offensive on the Eastern Front
+B) It forced the Red Army to transition to defensive warfare
+C) It allowed the Axis to regain the strategic initiative
+D) It resulted in a prolonged stalemate with no decisive winner
+",1,null),
+
+(267,31,"4. How did the Soviet Union prepare for the Manchurian Operation against Japan?",
+"A) By launching an immediate large-scale attack without prior preparation
+B) By relying solely on naval and air superiority
+C) By forming an alliance with China and the United States
+D) By secretly redeploying troops from the Western to Eastern regions
+",1,null),
+
+(268,31,"5. What was the main consequence of the Stalingrad Strategic Offensive Operation?",
+"A) Germany successfully withdrew its troops with minimal losses
+B) The Soviet Union regained only partial control of its territory
+C) The Axis alliance weakened, and the Soviet Union gained the strategic initiative
+D) Hitler’s blitzkrieg strategy succeeded in maintaining the Eastern Front
+",1,null);
+
+INSERT INTO answer_option(id, item_id, left_text, text, is_correct) VALUES
+(359,264,null, "a", TRUE),
+(360,265,null, "b", TRUE),
+(361,266,null, "a", TRUE),
+(362,267,null, "d", TRUE),
+(363,268,null, "c", TRUE);
