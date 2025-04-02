@@ -12,8 +12,8 @@ import requests
 import hashlib
 from functools import wraps
 
-from config import *
-from почта.pochta import send_mail
+from quiz_english.config import *
+from quiz_english.почта.pochta import send_mail
 
 app = Flask(__name__)
 
@@ -378,7 +378,6 @@ def edit_word(id_word):
         conn = connect_to_db()
         cursor = conn.cursor(dictionary=True)
 
-
         if request.method == 'GET':
             if id_word == 0:
                 cursor.execute('SELECT * FROM words where user_id=%s', (session['id'],))
@@ -388,12 +387,10 @@ def edit_word(id_word):
                 word = cursor.fetchone()
             return jsonify({'status': 'success', 'message': word}), 200
 
-
         if request.method == 'DELETE':
             cursor.execute('DELETE FROM words where id=%s', (id_word,))
             conn.commit()
             return jsonify({'status': 'success', 'message': 'слово удалено'}), 200
-
 
         data = request.json
         new_word = data.get('word')
@@ -409,7 +406,6 @@ def edit_word(id_word):
             last_id = cursor.lastrowid
             conn.commit()
             return jsonify({'status': 'success', 'message': 'слово добавлено', 'last_id': last_id}), 200
-
 
         cursor.execute('SELECT * FROM words where id=%s', (id_word,))
         word = cursor.fetchone()
@@ -586,7 +582,6 @@ def section(id_section):
             print('переход')
             return redirect(url_for('section_result', id_section=id_section))
 
-
         cursor.execute('''
         SELECT 
             section.id AS section_id,
@@ -612,10 +607,10 @@ def section(id_section):
             answer_option.item_id AS answer_option_item_id,
             answer_option.left_text,
             answer_option.text AS answer_option_text,
-            
+
             answer_option_result.user_id as is_otvet
-            
-            
+
+
         FROM 
             task
         JOIN 
@@ -626,13 +621,12 @@ def section(id_section):
             section ON task.section_id = section.id
         LEFT JOIN 
             answer_option_result ON answer_option_result.answer_option_id = answer_option.id
-            
+
         WHERE section.id = %s
         ''', (id_section,))
 
         rows = cursor.fetchall()
         print(rows)
-
 
         if not rows:
             return jsonify({'status': 'error', 'message': 'задания не найдены'}), 404
@@ -818,8 +812,6 @@ def table(table):
                                   WHERE TABLE_NAME = %s AND TABLE_SCHEMA = %s;''', (table, MYSQL_DATABASE))
                 table_head = [i['Field'] for i in cursor.fetchall()]
 
-
-
                 if request.method == 'POST':
                     data = request.get_json()  # Получаем JSON данные
 
@@ -964,19 +956,19 @@ def poisk_record(table, column, text):
 
     return abort(403)
 
-@app.route('/admin/add_task', methods=['GET', 'POST','PUT','DELETE'])
+
+@app.route('/admin/add_task', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def add_task():
     print('add_task')
     if 'is_admin' in session:
         if session['is_admin'] == True:
             print('реализовать логику')
 
-
-
     return abort(403)
 
+
 def start():
-    app.run(host='0.0.0.0', port=5000, debug=True)  # поставить порт 80, debug=False
+    app.run(host='0.0.0.0', port=5002, debug=True)  # поставить порт 80, debug=False
 
 
 if __name__ == '__main__':

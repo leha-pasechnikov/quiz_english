@@ -3,7 +3,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-from config import EMAIL_ADDRESS, EMAIL_PASSWORD
+from quiz_english.config import EMAIL_ADDRESS, EMAIL_PASSWORD
 
 def send_mail(reset_link, recipients):
     try:
