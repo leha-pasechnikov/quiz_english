@@ -12,8 +12,9 @@ import requests
 import hashlib
 from functools import wraps
 
-from quiz_english.config import *
-from quiz_english.почта.pochta import send_mail
+from config import *
+from почта.pochta import send_mail
+from сертификат.sertificat import send_mail_with_image
 
 app = Flask(__name__)
 
@@ -121,6 +122,46 @@ def connect_to_db():
         database=MYSQL_DATABASE  # Название базы данных
     )
 
+def check_min_point(id, id_topic):
+    count_last = -1
+    count_min = -1
+    try:
+        conn = connect_to_db()
+        cursor = conn.cursor(dictionary=True)
+
+        # сколько баллов у человека за прохождение прошлого теста
+        print(id, id_topic)
+        cursor.execute('''select count(aor.id) as count
+        from answer_option_result aor
+        join answer_option ao on ao.id = aor.answer_option_id
+        join item i on i.id = ao.item_id
+        join task t on t.id = i.task_id
+        join section s on s.id = t.section_id
+        join topic on topic.id = s.topic_id
+        where aor.text = ao.text and user_id = %s and topic.id = %s and ao.is_correct = 1
+        group by topic.id;''', (id, id_topic - 1))
+        count_last = cursor.fetchone()
+        if count_last:
+            count_last = count_last.get('count')
+        else:
+            count_last = 0
+
+        print(count_last)
+        cursor.execute('select min_point from topic where id = %s', (id_topic,))
+        count_min = cursor.fetchone().get('min_point')
+        print(count_min)
+        if count_min > count_last:
+            return {'result':False, 'count_last':count_last, 'count_min':count_min}
+        return {'result':True, 'count_last':count_last, 'count_min':count_min}
+
+    except Exception as err:
+        print(err)
+        return {'result':False, 'count_last':count_last, 'count_min':count_min}
+    finally:
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conn' in locals() and conn:
+            conn.close()
 
 @app.route('/logout')
 def logout():
@@ -136,7 +177,7 @@ def index():
 
         # Получаем все темы с разделами через JOIN
         cursor.execute('''
-            SELECT t.id AS topic_id, t.title AS topic_title, s.id AS section_id, s.title AS section_title
+            SELECT t.id AS topic_id, t.title AS topic_title, t.min_point, s.id AS section_id, s.title AS section_title
             FROM topic t
             LEFT JOIN section s ON t.id = s.topic_id
             ORDER BY t.id, s.id
@@ -537,11 +578,40 @@ def section_result(id_section):
                 for task in section_data["section"]["task"]:
                     task["item"] = list(task["item"].values())
                 print(section_data)
-                return render_template('section_result.html', section=section_data)
+                is_final = False
+                if check_min_point(session['id'], 5).get('result'):
+                    is_final = True
+                return render_template('section_result.html', section=section_data, is_final = is_final)
 
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'Произошла ошибка: {str(e)}'}), 500
 
+@app.route('/get_sertificate', methods=['GET'])
+@is_id()
+def get_sertificate():
+    try:
+        res = check_min_point(session['id'], 5)
+        print(res)
+        if res.get('result') == True:
+            conn = connect_to_db()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute('select last_name, first_name, middle_name, email from user where id = %s', (session['id'],))
+            user_info = cursor.fetchone()
+            if user_info:
+                if send_mail_with_image('certificate_output.jpg', [user_info.get('email')], user_info.get('last_name'), user_info.get('first_name'), user_info.get('middle_name')):
+                    return jsonify({"status": "success", "message": f"письмо отправлено на {user_info.get('email')}" }), 200
+                return jsonify({'status': 'error', 'message': 'Ошибка отправки письма'}), 403
+        else:
+            return jsonify({'status': 'error', 'message': 'Итоговый тест не пройден'}), 403
+
+    except Exception as err:
+        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(err)}'}), 500
+
+    finally:
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conn' in locals() and conn:
+            conn.close()
 
 @app.route('/section/<int:id_section>', methods=['GET', 'POST'])
 @is_id()
@@ -549,6 +619,14 @@ def section(id_section):
     try:
         conn = connect_to_db()
         cursor = conn.cursor(dictionary=True)
+        cursor.execute('select topic_id from section where id = %s', (id_section,))
+        id_topic = cursor.fetchone().get('topic_id')
+        if id_topic > 1:
+            res = check_min_point(session['id'], id_topic)
+            print(res)
+            if res.get('result') == False:
+                return "решите прошлый топик"
+
 
         if request.method == 'POST':
             answers = request.form
@@ -957,14 +1035,6 @@ def poisk_record(table, column, text):
     return abort(403)
 
 
-@app.route('/admin/add_task', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def add_task():
-    print('add_task')
-    if 'is_admin' in session:
-        if session['is_admin'] == True:
-            print('реализовать логику')
-
-    return abort(403)
 
 
 def start():

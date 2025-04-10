@@ -294,6 +294,31 @@ input[disabled] {
     {% else %}
         <h2>Задания не найдены</h2>
     {% endif %}
+    {% if is_final %}
+        <button id="get-certificate-btn">Получить сертификат</button>
+        <script>
+        document.getElementById('get-certificate-btn').addEventListener('click', function() {
+            fetch('/get_sertificate', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json()) // Преобразуем ответ в JSON
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message); // Показываем сообщение об успехе
+                } else {
+                    alert(`Ошибка: ${data.message}`); // Показываем сообщение об ошибке
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке запроса.');
+            });
+        });
+        </script>
+    {% endif %}
 
 </body>
 </html>

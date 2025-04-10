@@ -18,7 +18,9 @@ CREATE TABLE user (
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+
     time_score TIMESTAMP NOT NULL, -- время изменения очков в триггере
+
     note TEXT(25000) NOT NULL -- заметки пользователя
 );
 
@@ -34,7 +36,8 @@ CREATE TABLE words (
 -- Таблица тем
 CREATE TABLE topic (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL
+    title VARCHAR(255) NOT NULL,
+    min_point INT NOT NULL
 );
 
 -- Таблица разделов
@@ -554,12 +557,12 @@ INSERT INTO user (last_name, first_name, middle_name, email, username, password,
 ('Сидоров', 'Сидор', 'Сидорович', 'sidorov3@example.com', 'login3', 'pass3', '2024-02-24 18:20:20', ''),
 ('Кузнецов', 'Алексей', 'Алексеевич', 'kuznetsov4@example.com', 'login4', 'pass4', '2024-02-24 18:20:20', '');
 
-INSERT INTO topic(id, title) VALUES
-(1, "Military arts"),
-(2, "Military-Political Outcomes and Lessons of the War"),
-(3, "The causes of the Second World War"),
-(4, "The main events of the Second World War"),
-(5, "Final Test");
+INSERT INTO topic(id, title, min_point) VALUES
+(1, "Military arts", 55),
+(2, "Military-Political Outcomes and Lessons of the War", 70),
+(3, "The causes of the Second World War", 45),
+(4, "The main events of the Second World War", 46),
+(5, "Final Test", 17);
 
 INSERT INTO section(id,topic_id,title) VALUES
 (1,1,"Grammar and Vocabulary"),
