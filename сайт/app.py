@@ -208,7 +208,8 @@ def index():
         return render_template('index.html', topics=topics)
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+        print(str(e))
+        return jsonify({'status': 'error', 'message': 'произошла ошибка'}), 500
 
     finally:
         if 'cursor' in locals() and cursor:
@@ -245,7 +246,8 @@ ORDER BY
         return render_template('leaderboard.html', leaderboard=leaderboard)
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+        print(str(e))
+        return jsonify({'status': 'error', 'message': 'Произошла ошибка'}), 500
 
     finally:
         if 'cursor' in locals() and cursor:
@@ -281,7 +283,8 @@ def login():
             return jsonify({'status': 'error', 'message': 'неверный логин или пароль'}), 401
 
         except Exception as e:
-            return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+            print(str(e))
+            return jsonify({'status': 'error', 'message': 'Произошла ошибка'}), 500
 
         finally:
             if 'cursor' in locals() and cursor:
@@ -316,7 +319,8 @@ def register():
             return jsonify({'status': 'success', 'message': 'Участник зарегистрирован', "last_id": user_id}), 200
 
         except Exception as e:
-            return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+            print(str(e))
+            return jsonify({'status': 'error', 'message': 'Произошла ошибка'}), 500
 
         finally:
             if 'cursor' in locals() and cursor:
@@ -369,7 +373,8 @@ ORDER BY
         return render_template('personal.html', user=user_information, words=words_information, score=score)
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+        print(str(e))
+        return jsonify({'status': 'error', 'message': 'Произошла ошибка'}), 500
 
     finally:
         if 'cursor' in locals() and cursor:
@@ -401,7 +406,8 @@ def edit_note():
             return jsonify({'status': 'success', 'message': 'блокнот изменён'}), 200
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+        print(str(e))
+        return jsonify({'status': 'error', 'message': f'Произошла ошибка'}), 500
 
     finally:
         if 'cursor' in locals() and cursor:
@@ -467,7 +473,8 @@ def edit_word(id_word):
 
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+        print(str(e))
+        return jsonify({'status': 'error', 'message': 'Произошла ошибка'}), 500
 
     finally:
         if 'cursor' in locals() and cursor:
@@ -584,7 +591,8 @@ def section_result(id_section):
                 return render_template('section_result.html', section=section_data, is_final = is_final)
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'Произошла ошибка: {str(e)}'}), 500
+        print(str(e))
+        return jsonify({'status': 'error', 'message': f'Произошла ошибка'}), 500
 
 @app.route('/get_sertificate', methods=['GET'])
 @is_id()
@@ -604,8 +612,9 @@ def get_sertificate():
         else:
             return jsonify({'status': 'error', 'message': 'Итоговый тест не пройден'}), 403
 
-    except Exception as err:
-        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(err)}'}), 500
+    except Exception as e:
+        print(str(e))
+        return jsonify({'status': 'error', 'message': 'Произошла ошибка'}), 500
 
     finally:
         if 'cursor' in locals() and cursor:
@@ -759,7 +768,8 @@ def section(id_section):
         return render_template('section.html', section=section_data)
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'произошла ошибка {str(e)}'}), 500
+        print(str(e))
+        return jsonify({'status': 'error', 'message': 'Произошла ошибка'}), 500
 
     finally:
         if 'cursor' in locals() and cursor:
